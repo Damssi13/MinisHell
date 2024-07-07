@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 09:37:11 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/07 18:17:08 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/07 18:58:17 by rachid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,15 +61,14 @@ void	split_args(char *p, int start, int inside, t_lexer **head)
 			step_one(p, &inside, &quote, i);
 			i++;
 		}
-		else if (!inside && (p[i] == ' ' || p[i] == '\t' || p[i] == '\n'
-				|| p[i] == '|'))
+		else if (!inside && (is_whitespace(p[i]) || p[i] == '|'))
 		{
 			end = i;
 			if (end > start)
 				make_words(p, start, end, head);
 			if (p[i] == '|')
 				make_words(p, i, i + 1, head);
-			while (p[++i] == ' ' || p[i] == '\t' || p[i] == '\n');
+			while (is_whitespace(p[++i]));
 			start = i;
 		}
 		else
