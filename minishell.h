@@ -6,7 +6,7 @@
 /*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:10:03 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/10 15:38:49 by rachid           ###   ########.fr       */
+/*   Updated: 2024/07/11 14:25:45 by rachid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ typedef enum s_builtins{
 	UNSET,
 	EXIT,
 	ENV,
-}t_builtins;
+}e_builtins;
 
 typedef enum s_tokens
 {
@@ -37,12 +37,12 @@ typedef enum s_tokens
 	HERDOC = 4,
 	APP_OUT = 5,
 	ARG = 6,
-}					t_tokens;
+}					e_tokens;
 
 typedef struct s_lexer
 {
 	char			*word;
-	t_tokens		token;
+	e_tokens		token;
 	int 			index;
 	struct s_lexer	*next;
 	struct s_lexer	*prev;
@@ -53,7 +53,7 @@ typedef struct s_parser
 	char 		**str;
 	int 		n_redirections;
 	t_lexer 	redirections;
-	t_builtins	builtin;
+	e_builtins	builtin;
 	struct s_parser *next;
 	struct s_parser *prev;
 }t_parser;
