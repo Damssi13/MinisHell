@@ -6,7 +6,7 @@
 /*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:10:03 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/11 14:25:45 by rachid           ###   ########.fr       */
+/*   Updated: 2024/07/12 19:31:31 by rachid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ typedef struct s_parser
 {
 	char 		**str;
 	int 		n_redirections;
-	t_lexer 	redirections;
+	t_lexer 	*redirections;
 	e_builtins	builtin;
 	struct s_parser *next;
 	struct s_parser *prev;
@@ -76,4 +76,22 @@ char				*ft_strtrim(char const *s1, char const *set);
 int					check_next(char *first, char next);
 int 				is_whitespace(char c);
 
+
+/**************             DAMSSI             *************/
+
+void parsing(t_lexer **head, t_parser **commands);
+void	cmd_addback(t_parser **command, t_parser *new_cmd);
+t_parser *new_cmd(char **cmd);
+int find_builtin(char *first_word);
+void 	argscpy(t_lexer **head, int args, char **cmd);
+void rm_node(t_lexer **lst);
+int count_args(t_lexer **lst);
+void rm_redirection(t_lexer **head, t_parser **cmd);
+void add_redirection(t_lexer *lst, t_parser **cmd);
+void    lex_addback(t_lexer **redirections, t_lexer *new_lex);
+t_lexer     *new_lex(int r_num, e_tokens redirection, char *file);
+e_tokens    red_join(e_tokens r1, e_tokens r2);
+int     redir_kind(t_lexer *lst);
+void ft_error(char *message);
+int redirection_check(t_lexer *tmp);
 #endif

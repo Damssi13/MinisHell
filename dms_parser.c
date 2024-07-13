@@ -6,7 +6,7 @@
 /*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 16:56:16 by rachid            #+#    #+#             */
-/*   Updated: 2024/07/11 15:36:34 by rachid           ###   ########.fr       */
+/*   Updated: 2024/07/13 18:09:44 by rachid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,7 @@ int redirection_check(t_lexer *tmp)
 void ft_error(char *message)
 {
 	ft_putstr_fd(message, 2);
-	// you free all the nodes
-	//
+	// you free all the node
 }
 int     redir_kind(t_lexer *lst)
 {
@@ -65,13 +64,14 @@ e_tokens    red_join(e_tokens r1, e_tokens r2)
         return HERDOC;
     else if(r1 == RED_OUT && r2 == RED_OUT)
         return APP_OUT;
+    return APP_OUT; //did it because control reaches end of non void 
 }
 t_lexer     *new_lex(int r_num, e_tokens redirection, char *file)
 {
     t_lexer *new_lex;
 
     new_lex = malloc(sizeof(t_lexer));
-    if(new_lex)
+    if(!new_lex)
         ft_error("malloc failed to allocate");
     new_lex->next = NULL;
     new_lex->prev = NULL;
@@ -90,6 +90,7 @@ void    lex_addback(t_lexer **redirections, t_lexer *new_lex)
     tmp = *redirections;
     if(!tmp)
     {
+        new_lex->index = 0;
         *redirections = new_lex;
         i = 0;
         return ;
@@ -111,18 +112,19 @@ void add_redirection(t_lexer *lst, t_parser **cmd)
     if(redirection_type == 1)
         node = new_lex(1, lst->token ,ft_strdup(lst->next->word));
     else if(redirection_type == 2)
+    {
         node = new_lex(2, lst->token, ft_strdup(lst->next->next->word));
-    
+    }
 	lex_addback(&(*cmd)->redirections, node);
 
-    rm_node(lst);
+    rm_node(&lst);/// now this is the probelem
     if(redirection_type == 2)
     {
-        rm_node(lst->next);
-        rm_node(lst->next->next);
+        rm_node(&lst->next);
+        rm_node(&lst->next->next);
     }
     else
-        rm_node(lst->next);
+        rm_node(&lst->next);
         
 }
 
@@ -152,7 +154,8 @@ int count_args(t_lexer **lst)
 
 	curr = *lst;
 	i = 0;
-	while (curr->token != PIPE && curr)
+
+	while (curr && curr->token != PIPE)
 	{
 		i++;
 		curr = curr->next;
@@ -162,9 +165,21 @@ int count_args(t_lexer **lst)
 void rm_node(t_lexer **lst)
 {
 	t_lexer *tmp;
-
+    t_lexer *tmp2;
+    
 	tmp = *lst;
-	tmp->next->prev = NULL;
+    if(tmp->prev)
+    {
+        tmp2 = tmp->prev;
+        tmp2->next = tmp->next;
+        tmp->next->prev = tmp2;
+        free(tmp);
+        return ;
+    }
+    if(tmp->next)
+    {
+        tmp->next->prev = NULL;
+    }
 	*lst = tmp->next;
 	free(tmp);
 }
@@ -182,7 +197,8 @@ void 	argscpy(t_lexer **head, int args, char **cmd)
 		{
 			cmd[i++] = ft_strdup(tmp->word);
 			rm_node(head);
-			tmp = *head;
+			*head = tmp->next;
+            tmp = *head;
 		}
 		args--;
 	}
@@ -255,6 +271,7 @@ void parsing(t_lexer **head, t_parser **commands)
     
 	    rm_redirection(head, commands);
 	    args = count_args(head);
+
 	    cmd = malloc(sizeof(char *) * (args + 1));
 	    if (!cmd)
 	    	ft_error("malloc failed to allocate");
