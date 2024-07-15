@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dms_parser.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 16:56:16 by rachid            #+#    #+#             */
-/*   Updated: 2024/07/15 09:34:13 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/15 20:28:37 by rachid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ int redirection_check(t_lexer *tmp)
             return 0;
 		curr = curr->next;
 	}
+	if((outfile || infile) && !curr)
+		return 1;
 	return 0;
 }
 
@@ -102,11 +104,11 @@ void    lex_addback(t_lexer **redirections, t_lexer *new_lex)
     new_lex->index = i++;
 }
 
-void add_redirection(t_lexer *lst, t_parser **cmd)
+void	add_redirection(t_lexer *lst, t_lexer **redirection)
 {
     /*every redirection is in a node so i should check whether it is multiple or solo*/
 	int redirection_type;
-    t_lexer *node = NULL;
+    t_lexer *node;
     
     redirection_type = redir_kind(lst);
     if(redirection_type == 1)
@@ -115,7 +117,8 @@ void add_redirection(t_lexer *lst, t_parser **cmd)
     {
         node = new_lex(2, lst->token, ft_strdup(lst->next->next->word));
     }
-	lex_addback(&(*cmd)->redirections, node);
+	
+	lex_addback(redirection, node);
 
     rm_node(&lst);/// now this is the probelem
     if(redirection_type == 2)
@@ -125,27 +128,34 @@ void add_redirection(t_lexer *lst, t_parser **cmd)
     }
     else
         rm_node(&lst->next);
-        
+    return ;
 }
 
-void rm_redirection(t_lexer **head, t_parser **cmd)
+int 	rm_redirection(t_lexer **head, t_lexer **redirection)
 {
 	t_lexer *tmp;
+	int removed;
 
-	(void)cmd;
+	removed = 0;
 	tmp = *head;
 	while (tmp)
 	{
 		if (tmp->token == PIPE)
-			return;
+			return removed;
 		if (tmp->token >= 2 && tmp->token <= 5)
 			if (redirection_check(tmp))
+			{
 				ft_error("syntax error near unexpected token");
+				exit(1);
+			}
 		if (tmp->token >= 2 && tmp->token <= 5)
-			add_redirection(tmp, cmd);
+		{
+			add_redirection(tmp, redirection);
+			removed++;
+		}
 		tmp = tmp->next;
 	}
-	return;
+	return(removed);
 }
 int count_args(t_lexer **lst)
 {
@@ -172,7 +182,8 @@ void rm_node(t_lexer **lst)
     {
         tmp2 = tmp->prev;
         tmp2->next = tmp->next;
-        tmp->next->prev = tmp2;
+		if(tmp->next)
+        	tmp->next->prev = tmp2;
         free(tmp);
         return ;
     }
@@ -228,7 +239,7 @@ int find_builtin(char *first_word) /**** it checks if the first string in the ar
 	return 0;
 }
 
-t_parser *new_cmd(char **cmd)
+t_parser *new_cmd(char **cmd, t_lexer *redirects, int num_redirects)
 {
 	t_parser *new;
 
@@ -236,6 +247,8 @@ t_parser *new_cmd(char **cmd)
 	if (!new)
 		ft_error("malloc failed to allocate");
 	new->str = cmd;
+	new->redirections = redirects;
+	new->n_redirections = num_redirects;
 	new->builtin = find_builtin(cmd[0]);
 	new->next = NULL;
 	return new;
@@ -256,21 +269,32 @@ void	cmd_addback(t_parser **command, t_parser *new_cmd)
 	curr->next = new_cmd;
 	new_cmd->prev = curr;
 }
+void	init_parser(t_parser **cmd)
+{
+	t_parser *tmp;
 
+	tmp = *cmd;
+
+	tmp->n_redirections = 0;
+	tmp->builtin = 0;
+}
 
 void parsing(t_lexer **head, t_parser **commands)
 {
 	int args;
 	char **cmd;
-	// t_lexer *tmp;
-
+	t_lexer *redirection;
+	int redir_num;
+	
     while((*head))
     {   
+		redirection = NULL;
+		
 	    if((*head)->token == PIPE) //if it encounters a pipe
 	    	rm_node(head);
     
-	    rm_redirection(head, commands);
-	    args = count_args(head);
+	    redir_num = rm_redirection(head, &redirection);
+	    args = count_args(head); //value of the head after removing reds
 
 	    cmd = malloc(sizeof(char *) * (args + 1));
 	    if (!cmd)
@@ -278,6 +302,6 @@ void parsing(t_lexer **head, t_parser **commands)
         cmd[args] = NULL;
 	    argscpy(head, args, cmd);
     
-	    cmd_addback(commands, new_cmd(cmd));
+	    cmd_addback(commands, new_cmd(cmd, redirection, redir_num));
     }
 }

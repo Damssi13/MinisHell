@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:10:03 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/15 15:25:53 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/15 20:27:51 by rachid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,19 +87,20 @@ int 				pwd_builtin(void);
 
 /**************             DAMSSI             *************/
 
-void 				parsing(t_lexer **head, t_parser **commands);
-void				cmd_addback(t_parser **command, t_parser *new_cmd);
-t_parser 			*new_cmd(char **cmd);
-int 				find_builtin(char *first_word);
-void 				argscpy(t_lexer **head, int args, char **cmd);
-void 				rm_node(t_lexer **lst);
-int 				count_args(t_lexer **lst);
-void 				rm_redirection(t_lexer **head, t_parser **cmd);
-void 				add_redirection(t_lexer *lst, t_parser **cmd);
-void    			lex_addback(t_lexer **redirections, t_lexer *new_lex);
-t_lexer     		*new_lex(int r_num, e_tokens redirection, char *file);
-e_tokens    		red_join(e_tokens r1, e_tokens r2);
-int     			redir_kind(t_lexer *lst);
-void 				ft_error(char *message);
-int 				redirection_check(t_lexer *tmp);
+void 		parsing(t_lexer **head, t_parser **commands);
+void		cmd_addback(t_parser **command, t_parser *new_cmd);
+t_parser 	*new_cmd(char **cmd, t_lexer *redirects, int num_redirects);
+int 		find_builtin(char *first_word);
+void 		argscpy(t_lexer **head, int args, char **cmd);
+void 		rm_node(t_lexer **lst);
+int 		count_args(t_lexer **lst);
+int 		rm_redirection(t_lexer **head, t_lexer **redirection);
+void 		add_redirection(t_lexer *lst, t_lexer **redirection);
+void    	lex_addback(t_lexer **redirections, t_lexer *new_lex);
+t_lexer     *new_lex(int r_num, e_tokens redirection, char *file);
+e_tokens    red_join(e_tokens r1, e_tokens r2);
+int     	redir_kind(t_lexer *lst);
+void 		ft_error(char *message);
+int 		redirection_check(t_lexer *tmp);
+
 #endif
