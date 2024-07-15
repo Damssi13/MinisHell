@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dms_parser.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 16:56:16 by rachid            #+#    #+#             */
-/*   Updated: 2024/07/13 18:09:44 by rachid           ###   ########.fr       */
+/*   Updated: 2024/07/15 09:34:13 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ void add_redirection(t_lexer *lst, t_parser **cmd)
 {
     /*every redirection is in a node so i should check whether it is multiple or solo*/
 	int redirection_type;
-    t_lexer *node;
+    t_lexer *node = NULL;
     
     redirection_type = redir_kind(lst);
     if(redirection_type == 1)
