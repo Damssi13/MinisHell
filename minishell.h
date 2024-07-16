@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:10:03 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/15 20:27:51 by rachid           ###   ########.fr       */
+/*   Updated: 2024/07/16 14:27:53 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,6 @@
 # include <readline/readline.h>
 # include <stdio.h>
 # include <stdlib.h>
-# include <fcntl.h>
-#include <signal.h>
-
-
 
 typedef enum s_builtins{
 	ECHO = 1,
@@ -80,27 +76,36 @@ int					parse_quote(char *rl);
 char				*ft_strtrim(char const *s1, char const *set);
 int					check_next(char *first, char next);
 int 				is_whitespace(char c);
-void 				echo_builtin(char **args);
+char 				*ft_strtok(char *str, const char *delim);
 int 				pwd_builtin(void);
+void 				echo_builtin(char **args);
+void 				cd_builtin(char **args);
+void 				exit_builtin(char **args);
+void 				unset_builtin(char **args);
+void 				export_builtin(char **args);
+void 				env_builtin(void);
+
 
 
 
 /**************             DAMSSI             *************/
 
-void 		parsing(t_lexer **head, t_parser **commands);
-void		cmd_addback(t_parser **command, t_parser *new_cmd);
-t_parser 	*new_cmd(char **cmd, t_lexer *redirects, int num_redirects);
-int 		find_builtin(char *first_word);
-void 		argscpy(t_lexer **head, int args, char **cmd);
-void 		rm_node(t_lexer **lst);
-int 		count_args(t_lexer **lst);
-int 		rm_redirection(t_lexer **head, t_lexer **redirection);
-void 		add_redirection(t_lexer *lst, t_lexer **redirection);
-void    	lex_addback(t_lexer **redirections, t_lexer *new_lex);
-t_lexer     *new_lex(int r_num, e_tokens redirection, char *file);
-e_tokens    red_join(e_tokens r1, e_tokens r2);
-int     	redir_kind(t_lexer *lst);
-void 		ft_error(char *message);
-int 		redirection_check(t_lexer *tmp);
+void 				parsing(t_lexer **head, t_parser **commands);
+void				cmd_addback(t_parser **command, t_parser *new_cmd);
+t_parser 			*new_cmd(char **cmd);
+int 				find_builtin(char *first_word);
+void 				argscpy(t_lexer **head, int args, char **cmd);
+void 				rm_node(t_lexer **lst);
+int 				count_args(t_lexer **lst);
+void 				rm_redirection(t_lexer **head, t_parser **cmd);
+void 				add_redirection(t_lexer *lst, t_parser **cmd);
+void    			lex_addback(t_lexer **redirections, t_lexer *new_lex);
+t_lexer     		*new_lex(int r_num, e_tokens redirection, char *file);
+e_tokens    		red_join(e_tokens r1, e_tokens r2);
+int     			redir_kind(t_lexer *lst);
+void 				ft_error(char *message);
+int 				redirection_check(t_lexer *tmp);
+
+
 
 #endif
