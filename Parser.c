@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 09:37:44 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/07 17:59:25 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/16 11:19:19 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,16 +78,18 @@ void	first_parse(char *rl, t_lexer **head)
 		clear_screen();
 	trimmed_rl = ft_strtrim(rl, " \t\n");
 	free(rl);
-	if (trimmed_rl[0] == '|' || trimmed_rl[strlen(trimmed_rl) - 1] == '|')
+	if (trimmed_rl[0] == '|' || trimmed_rl[ft_strlen(trimmed_rl) - 1] == '|')
 	{
 		printf("syntax error near unexpected token '|'\n");
+		free(trimmed_rl);
 		return ;
 	}
-	rl = trimmed_rl;
-	if (parse_quote(rl))
+	if (parse_quote(trimmed_rl))
 	{
 		printf("Syntax Error: parsing quote error [KO]\n");
+		free(trimmed_rl);
 		return ;
 	}
-	split_args(rl, i, inside, head);
+	split_args(trimmed_rl, i, inside, head);
+	free(trimmed_rl);
 }

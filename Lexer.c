@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 09:37:11 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/08 11:38:57 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/09 16:37:30 by rachid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,15 +61,14 @@ void	split_args(char *p, int start, int inside, t_lexer **head)
 			step_one(p, &inside, &quote, i);
 			i++;
 		}
-		else if (!inside && (p[i] == ' ' || p[i] == '\t' || p[i] == '\n'
-				|| p[i] == '|' || p[i] == '>' || p[i] == '<'))
+		else if (!inside && (is_whitespace(p[i]) || p[i] == '|' || p[i] == '>' || p[i] == '<'))
 		{
 			end = i;
 			if (end > start)
 				make_words(p, start, end, head);
 			if (p[i] == '|' || p[i] == '>' || p[i] == '<')
 				make_words(p, i, i + 1, head);
-			while (p[++i] == ' ' || p[i] == '\t' || p[i] == '\n');
+			while (is_whitespace(p[++i]));
 			start = i;
 		}
 		else
@@ -88,7 +87,7 @@ void	free_tokens(t_lexer *head)
 	{
 		tmp = head;
 		head = head->next;
-		free(tmp->token);
+		free(tmp->word);
 		free(tmp);
 	}
 }
