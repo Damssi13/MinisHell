@@ -6,11 +6,12 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 09:40:39 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/16 15:22:12 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/18 12:45:01 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../header/minishell.h"
+
 
 int pwd_builtin(void)
 {
@@ -29,13 +30,16 @@ void echo_builtin(char **args)
     
     i = 1;
     n_flag = 0;
-    if (args[i] && !ft_strncmp(args[i], "-n", 2))
+
+    remove_quotes(args[i]);
+    while (args[i] && is_n_flag(args[i]))
     {
         n_flag = 1;
         i++;
-    }
+    }    
     while (args[i])
     {
+        remove_quotes(args[i]);
         write(1, args[i], ft_strlen(args[i]));
         if (args[i + 1])
             write(1, " ", 1);
