@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:10:03 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/16 14:27:53 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/20 09:11:54 by rachid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,11 @@ typedef enum s_builtins{
 typedef enum s_tokens
 {
 	PIPE = 1,
-	RED_OUT = 2,
-	RED_IN = 3,
-	HERDOC = 4,
-	APP_OUT = 5,
-	ARG = 6,
+	RED_OUT,
+	RED_IN,
+	HERDOC,
+	APP_OUT,
+	ARG,
 }					e_tokens;
 
 typedef struct s_lexer
@@ -59,7 +59,12 @@ typedef struct s_parser
 }t_parser;
 
 typedef struct s_mini{
-	int		pipes;
+	int			pipes;
+	char 		**envp;
+	char 		**path;
+	char		*rl;
+	t_parser 	*cmds;
+	t_lexer 	*head;
 	
 }t_mini;
 
@@ -105,6 +110,7 @@ e_tokens    		red_join(e_tokens r1, e_tokens r2);
 int     			redir_kind(t_lexer *lst);
 void 				ft_error(char *message);
 int 				redirection_check(t_lexer *tmp);
+char			 	**arr_dup(char **envm);
 
 
 

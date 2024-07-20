@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dms_parser.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 16:56:16 by rachid            #+#    #+#             */
-/*   Updated: 2024/07/15 09:34:13 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/20 09:12:06 by rachid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -280,4 +280,26 @@ void parsing(t_lexer **head, t_parser **commands)
     
 	    cmd_addback(commands, new_cmd(cmd));
     }
+}
+
+
+char **arr_dup(char **envm)
+{
+	int len;
+	char **arr;
+
+	len = 0;
+	while(envm[len])
+		len++;
+	arr = malloc(sizeof(char *) * (len +1));
+	if(!arr)
+		return NULL;
+	arr[len] = NULL;
+	len = 0;
+	while(envm[len])
+	{
+		arr[len] = ft_strdup(envm[len]);
+		len++;
+	}
+	return (arr);
 }
