@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:10:03 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/21 09:13:17 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/21 15:36:26 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 # include <readline/readline.h>
 # include <stdio.h>
 # include <stdlib.h>
+#include <sys/wait.h>
+#include <stdbool.h>
 
 typedef enum s_builtins{
 	ECHO = 1,
@@ -48,6 +50,15 @@ typedef struct s_lexer
 	struct s_lexer	*prev;
 }					t_lexer;
 
+typedef struct s_env
+{
+	char			*key;
+	char			*value;
+	char			*pwd;
+	char			*oldpwd;
+	struct s_env	*next;
+}					t_env;
+
 typedef struct s_parser
 {
 	char 		**str;
@@ -56,15 +67,7 @@ typedef struct s_parser
 	e_builtins	builtin;
 	struct s_parser *next;
 	struct s_parser *prev;
-}t_parser;
-
-typedef struct s_env
-{
-	char			*key;
-	char			*value;
-	struct s_env	*next;
-}					t_env;
-
+}				t_parser;
 
 typedef struct s_mini
 {
@@ -73,6 +76,7 @@ typedef struct s_mini
 	char 		**path;
 	char		*rl;
 	t_env		*env;
+	char		**export;
 	t_parser 	*cmds;
 	t_lexer 	*head;
 	
@@ -94,18 +98,20 @@ int 				is_whitespace(char c);
 char 				*ft_strtok(char *str, const char *delim);
 int 				pwd_builtin(void);
 void 				echo_builtin(char **args);
-void 				cd_builtin(char **args);
+void 				cd_builtin(char **args, t_env **env);
 void 				exit_builtin(char **args);
 void 				unset_builtin(char **args);
-void 				export_builtin(char **args);
-void 				env_builtin(t_env *env);
-void 				execute(t_parser *parser, t_mini *shell, t_env *env);
+void 				export_builtin(char **args, t_mini *shell);
+void 				env_builtin(t_env **env);
+void 				execute(t_parser *parser, t_mini *shell, t_env **env);
 void				free_parser(t_parser *head);
 void 				remove_quotes(char *str);
 int 				is_n_flag(char *arg);
 char 				*rm_quote(char *str);
-void 				print_env(t_env *env);
-
+t_env				*ft_new_env(char *key, char *value);
+void				ft_lstadd(t_env **lst, t_env *new);
+t_env 				*create_env(char **env);
+void 				print_env(t_env **env);
 
 
 
