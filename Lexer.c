@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 09:37:11 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/09 16:37:30 by rachid           ###   ########.fr       */
+/*   Updated: 2024/07/21 09:14:02 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void	split_args(char *p, int start, int inside, t_lexer **head)
 
 	i = 0;
 	quote = 0;
+	rm_quote(p);
 	while (p[i])
 	{
 		if (p[i] == '"' || p[i] == '\'')
