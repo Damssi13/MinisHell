@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:10:03 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/20 09:11:54 by rachid           ###   ########.fr       */
+/*   Updated: 2024/07/21 09:13:17 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,15 +58,25 @@ typedef struct s_parser
 	struct s_parser *prev;
 }t_parser;
 
-typedef struct s_mini{
+typedef struct s_env
+{
+	char			*key;
+	char			*value;
+	struct s_env	*next;
+}					t_env;
+
+
+typedef struct s_mini
+{
 	int			pipes;
 	char 		**envp;
 	char 		**path;
 	char		*rl;
+	t_env		*env;
 	t_parser 	*cmds;
 	t_lexer 	*head;
 	
-}t_mini;
+}				t_mini;
 
 /***************************** JANDRI **********************************/
 t_lexer				*ft_new_token(char *content);
@@ -88,7 +98,13 @@ void 				cd_builtin(char **args);
 void 				exit_builtin(char **args);
 void 				unset_builtin(char **args);
 void 				export_builtin(char **args);
-void 				env_builtin(void);
+void 				env_builtin(t_env *env);
+void 				execute(t_parser *parser, t_mini *shell, t_env *env);
+void				free_parser(t_parser *head);
+void 				remove_quotes(char *str);
+int 				is_n_flag(char *arg);
+char 				*rm_quote(char *str);
+void 				print_env(t_env *env);
 
 
 
