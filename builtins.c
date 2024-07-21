@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 09:40:39 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/16 15:22:12 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/21 09:15:00 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,17 +29,23 @@ void echo_builtin(char **args)
     
     i = 1;
     n_flag = 0;
-    if (args[i] && !ft_strncmp(args[i], "-n", 2))
+    if (!args[i])
+    {
+        write(1, "\n", 1);
+        return ;
+    }
+    remove_quotes(args[i]);
+    while (args[i] && is_n_flag(args[i]))
     {
         n_flag = 1;
         i++;
-    }
+    }    
     while (args[i])
     {
+        remove_quotes(args[i]);
         write(1, args[i], ft_strlen(args[i]));
-        if (args[i + 1])
+        if (args[i++ + 1])
             write(1, " ", 1);
-        i++;
     }
     if (!n_flag)
         write(1, "\n", 1);
@@ -48,7 +54,12 @@ void echo_builtin(char **args)
 void cd_builtin(char **args)
 {
     char *path;
-
+    
+    if(args[1] != NULL && args[2] != NULL)
+    {
+        ft_putendl_fd("minishell: cd: too many arguments", 2);
+        return ;
+    }
     if (!args[1])
         path = getenv("HOME");
     else if (!ft_strncmp(args[1], "-", 1))
@@ -107,15 +118,7 @@ void export_builtin(char **args)
 }
 
 
-void env_builtin(void)
+void env_builtin(t_env *env)
 {
-    int i;
-
-    extern char **environ;
-    i = 0;
-    while (environ[i])
-    {
-        ft_putendl_fd(environ[i], 1);
-        i++;
-    }
+    print_env(env);
 }
