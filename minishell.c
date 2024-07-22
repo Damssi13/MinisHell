@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:09:51 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/21 15:31:55 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/22 18:23:16 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	init_mini(t_mini *shell, char **envm)
 	shell->rl = NULL;	
 	shell->pipes = 0;
 	shell->env = create_env(envm);
-	shell->export = arr_dup(shell->envp);
+	// shell->export = arr_dup(shell->envp);
 }
 
 int main(int ac, char **av, char **envm)

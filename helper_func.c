@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 10:03:32 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/21 09:10:34 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/22 18:31:50 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,20 +87,23 @@ void remove_quotes(char *str)
 {
     char *src;
     char *dst;
-    int i;
-    int j;
+    bool in_double_quotes;
 
-    i = 0;
+    in_double_quotes = false;
     src = str;
     dst = str;
-    if (src[i] == '\'' || src[i] == '"')
-        i++;
-    j = 0;
-    while (src[i])
-        dst[j++] = src[i++];
-    if (j > 0 && (dst[j - 1] == '\'' || dst[j - 1] == '"'))
-        j--;
-    dst[j] = '\0';
+    while (*src)
+    {
+        if (*src == '"')
+            in_double_quotes = !in_double_quotes;
+        else if (*src == '\'' && !in_double_quotes)
+        {
+            src++;
+            continue;
+        }
+        *dst++ = *src++;
+    }
+    *dst = '\0';
 }
 
 int is_n_flag(char *arg)
@@ -135,25 +138,18 @@ void	free_parser(t_parser *head)
 
 char *rm_quote(char *str)
 {
-    int i = 0;
-    int j = 0;
+    int i;
+    int j;
+    char *dst;
     
-    char *dst = str;
 
+    dst = str;
+    j = 0;
+    i = 0;
     while (str[i])
     {
-        if (str[i] == '\'' || str[i] == '"' )
-        {
-            if (str[i + 1] == '\'' || str[i + 1] == '"')
-                i += 2;
-            else if (str[i + 1] == ' ' || str[i + 1] == '\t' || str[i + 1] == '\n')
-            {
-                while(str[i + 1] == ' ' || str[i + 1] == '\t' || str[i + 1] == '\n')
-                    i++;
-            }
-            else
-                dst[j++] = str[i++];
-        }
+        if ((str[i] == '"' && str[i + 1] == '"') || (str[i] == '\'' && str[i + 1] == '\''))
+            i += 2;
         else
             dst[j++] = str[i++];
     }

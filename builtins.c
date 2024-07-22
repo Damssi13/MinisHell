@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 09:40:39 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/21 15:30:28 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/22 18:16:12 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ void unset_builtin(char **args)
     }
 }
 
-void export_builtin(char **args, t_mini *shell)
+void export_builtin(char **args, t_mini *shell, t_env **env)
 {
     int i;
     char *key;
@@ -146,8 +146,8 @@ void export_builtin(char **args, t_mini *shell)
     j = 0;
     if(!args[1])
     {
-        while(shell->export[j])
-            ft_putendl_fd(shell->export[j++], 1);
+        while(shell->envp[j])
+            ft_putendl_fd(shell->envp[j++], 1);
     }
     i = 1;
     while (args[i])
@@ -155,9 +155,9 @@ void export_builtin(char **args, t_mini *shell)
         key = ft_strtok(args[i], "=");
         value = ft_strtok(NULL, "=");
         if (value)
-            setenv(key, value, 1);
+            update_env(env, key, value);
         else
-            setenv(key, "", 1);
+            update_env(env, key, "");
         i++;
     }
 }
