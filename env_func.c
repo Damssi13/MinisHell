@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 15:26:32 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/21 15:36:21 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/22 15:55:48 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,12 +77,12 @@ t_env *create_env(char **env)
 
 void print_env(t_env **env)
 {
-	t_env **tmp;
+	t_env *tmp;
 
-	tmp = env;
+	tmp = *env;
 	while (tmp)
 	{
-		printf("%s=%s\n", (*tmp)->key, (*tmp)->value);
-		tmp = &(*tmp)->next;
+		printf("%s=%s\n", tmp->key, tmp->value);
+		tmp = tmp->next;
 	}
 }
