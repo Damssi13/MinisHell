@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 09:40:39 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/23 16:26:44 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/23 16:29:18 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,7 @@ void unsetenv_custom(t_env **env, const char *key)
 
     while (temp)
     {
-        if (strcmp(temp->key, key) == 0)
+        if (ft_strncmp(temp->key, key, ft_strlen(key)) == 0)
         {
             if (prev)
                 prev->next = temp->next;
