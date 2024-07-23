@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 09:40:39 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/23 15:12:46 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/23 16:26:44 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,8 @@ char *getenv_value(t_env *env, const char *key)
 void setenv_value(t_env **env, const char *key, const char *value)
 {
     t_env *temp = *env;
+    t_env *last = NULL;
+    
     while (temp)
     {
         if (ft_strncmp(temp->key, key, ft_strlen(key)) == 0)
@@ -73,22 +75,25 @@ void setenv_value(t_env **env, const char *key, const char *value)
             temp->value = ft_strdup(value);
             return;
         }
+        last = temp;
         temp = temp->next;
     }
 
     t_env *new_node = malloc(sizeof(t_env));
     new_node->key = ft_strdup(key);
     new_node->value = ft_strdup(value);
-    new_node->next = *env;
-    *env = new_node;
+    new_node->next = NULL;
+    
+    if (last)
+        last->next = new_node;
+    else
+        *env = new_node;
 }
 
-void update_env(t_env **env, const char *oldpwd, const char *newpwd)
+void update_env(t_env **env, const char *key, const char *value)
 {
-    if (oldpwd)
-        setenv_value(env, "OLDPWD", oldpwd);
-    if (newpwd)
-        setenv_value(env, "PWD", newpwd);
+    if (key)
+        setenv_value(env, key, value);
 }
 
 void cd_builtin(char **args, t_env **env)
@@ -125,30 +130,56 @@ void exit_builtin(char **args)
         exit(0);
 }
 
-void unset_builtin(char **args)
+void unsetenv_custom(t_env **env, const char *key)
 {
-    int i;
+    t_env *temp = *env;
+    t_env *prev = NULL;
 
-    i = 1;
+    while (temp)
+    {
+        if (strcmp(temp->key, key) == 0)
+        {
+            if (prev)
+                prev->next = temp->next;
+            else
+                *env = temp->next;
+            
+            free(temp->key);
+            free(temp->value);
+            free(temp);
+            return;
+        }
+        prev = temp;
+        temp = temp->next;
+    }
+}
+
+void unset_builtin(char **args, t_env **env)
+{
+    int i = 1;
+
     while (args[i])
     {
-        unsetenv(args[i]);
+        unsetenv_custom(env, args[i]);
         i++;
     }
 }
 
-void export_builtin(char **args, t_mini *shell, t_env **env)
+void export_builtin(char **args, t_env **env)
 {
     int i;
     char *key;
     char *value;
-    int j;
 
-    j = 0;
-    if(!args[1])
+    if (!args[1])
     {
-        while(shell->envp[j])
-            ft_putendl_fd(shell->envp[j++], 1);
+        t_env *current = *env;
+        while (current)
+        {
+            printf("declare -x %s=\"%s\"\n", current->key, current->value);
+            current = current->next;
+        }
+        return;
     }
     i = 1;
     while (args[i])

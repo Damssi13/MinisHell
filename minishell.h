@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:10:03 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/22 18:15:38 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/23 16:27:18 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,8 +99,8 @@ int 				pwd_builtin(void);
 void 				echo_builtin(char **args);
 void 				cd_builtin(char **args, t_env **env);
 void 				exit_builtin(char **args);
-void 				unset_builtin(char **args);
-void 				export_builtin(char **args, t_mini *shell, t_env **env);
+void 				unset_builtin(char **args, t_env **env);
+void 				export_builtin(char **args, t_env **env);
 void 				env_builtin(t_env **env);
 void 				execute(t_parser *parser, t_mini *shell, t_env **env);
 void				free_parser(t_parser *head);
