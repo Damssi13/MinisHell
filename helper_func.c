@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 10:03:32 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/23 12:30:40 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/23 15:02:46 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,23 +87,28 @@ void remove_quotes(char *str)
 {
     char *src;
     char *dst;
-    bool in_double_quotes;
+    int in_single_quotes = 0;
+    int in_double_quotes = 0;
 
-    in_double_quotes = false;
     src = str;
     dst = str;
     while (*src)
     {
-        if (*src == '"' && !in_double_quotes)
-            in_double_quotes = !in_double_quotes;
-        else if ((*src == '\'' || *src == '"') && !in_double_quotes)
+        if (*src == '"' && !in_single_quotes)
         {
+            in_double_quotes = !in_double_quotes;
             src++;
-            continue;
         }
-        *dst++ = *src++;
+        else if (*src == '\'' && !in_double_quotes)
+        {
+            in_single_quotes = !in_single_quotes;
+            src++;
+        }
+        else if (!in_single_quotes && !in_double_quotes && (*src == '"' || *src == '\''))
+            src++;
+        else
+            *dst++ = *src++;
     }
-    *dst = '\0';
 }
 
 int is_n_flag(char *arg)
