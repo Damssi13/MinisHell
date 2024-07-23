@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:10:03 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/23 16:27:18 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/23 19:15:34 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ typedef struct s_env
 	char			*key;
 	char			*value;
 	char			*pwd;
+	int             exported;
 	char			*oldpwd;
 	struct s_env	*next;
 }					t_env;
@@ -107,10 +108,10 @@ void				free_parser(t_parser *head);
 void 				remove_quotes(char *str);
 int 				is_n_flag(char *arg);
 char 				*rm_quote(char *str);
-t_env				*ft_new_env(char *key, char *value);
+t_env 				*ft_new_env(const char *key, const char *value);
 void				ft_lstadd(t_env **lst, t_env *new);
 t_env 				*create_env(char **env);
-void 				print_env(t_env **env);
+char 				*ft_strnlen(const char *str, char delimiter);
 
 
 
