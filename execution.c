@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 13:19:48 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/21 15:31:20 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/23 12:23:15 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ void execute_builtin(t_parser *args, t_env **env, t_mini *shell)
     else if(ft_strncmp(args->str[0], "cd", 2) == 0)
         cd_builtin(args->str, env);
     else if(ft_strncmp(args->str[0], "export", 6) == 0)
-        export_builtin(args->str, shell);
+        export_builtin(args->str, shell, env);
     else if(ft_strncmp(args->str[0], "unset", 5) == 0)
         unset_builtin(args->str);
     else if(ft_strncmp(args->str[0], "env", 3) == 0)

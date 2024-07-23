@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 10:03:32 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/22 18:31:50 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/23 12:30:40 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,9 +94,9 @@ void remove_quotes(char *str)
     dst = str;
     while (*src)
     {
-        if (*src == '"')
+        if (*src == '"' && !in_double_quotes)
             in_double_quotes = !in_double_quotes;
-        else if (*src == '\'' && !in_double_quotes)
+        else if ((*src == '\'' || *src == '"') && !in_double_quotes)
         {
             src++;
             continue;
@@ -153,6 +153,8 @@ char *rm_quote(char *str)
         else
             dst[j++] = str[i++];
     }
+    if(j > 0 && (dst[j - 1] == '"' || dst[j - 1] == '\''))
+        j--;
     dst[j] = '\0';
     return str;
 }
