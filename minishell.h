@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:10:03 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/21 15:36:26 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/24 17:06:02 by rachid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,13 @@ typedef struct s_env
 	struct s_env	*next;
 }					t_env;
 
+typedef struct s_redirections
+{
+	t_lexer		*lexer;
+	t_lexer		*redirects;
+	int			n_redirects;
+}t_redirections;
+
 typedef struct s_parser
 {
 	char 		**str;
@@ -110,22 +117,22 @@ int 				is_n_flag(char *arg);
 char 				*rm_quote(char *str);
 t_env				*ft_new_env(char *key, char *value);
 void				ft_lstadd(t_env **lst, t_env *new);
-t_env 				*create_env(char **env);
+t_env				*create_env(char **env);
 void 				print_env(t_env **env);
 
 
 
 /**************             DAMSSI             *************/
 
-void 				parsing(t_lexer **head, t_parser **commands);
+void 				parsing(t_mini *shell);
 void				cmd_addback(t_parser **command, t_parser *new_cmd);
-t_parser 			*new_cmd(char **cmd);
+t_parser 			*new_cmd(char **cmd, t_redirections *redirex);
 int 				find_builtin(char *first_word);
 void 				argscpy(t_lexer **head, int args, char **cmd);
 void 				rm_node(t_lexer **lst);
 int 				count_args(t_lexer **lst);
-void 				rm_redirection(t_lexer **head, t_parser **cmd);
-void 				add_redirection(t_lexer *lst, t_parser **cmd);
+int 				rm_redirection(t_lexer *lexer, t_redirections *redirex);
+void 				add_redirection(t_lexer *lst, t_redirections *redirex);
 void    			lex_addback(t_lexer **redirections, t_lexer *new_lex);
 t_lexer     		*new_lex(int r_num, e_tokens redirection, char *file);
 e_tokens    		red_join(e_tokens r1, e_tokens r2);

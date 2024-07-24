@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 13:19:48 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/21 15:31:20 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/22 18:22:01 by rachid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,16 +66,35 @@ int pipe_check(char **args)
     return (0);
 }
 
-void execute_command(char *command, char **args, t_mini *shell)
+char *join_path(char *s1, char *s2)
+{
+    int len;
+    char *result;
+    int i;
+
+    len = ft_strlen(s1) + ft_strlen(s2) + 1;
+    i = 0;
+    
+    result = malloc(sizeof(char) * (len + 1));
+    if(!result)
+        return NULL;
+    result[len] = '\0';
+    while(*s1)
+        result[i++] = *s1++;
+    result[i++] = '/';
+    while(*s2)
+        result[i++] = *s2++;
+    return(result);
+}
+
+void execute_command(char **path, char **args, t_mini *shell)
 {
     pid_t pid;
     int status;
-    
-    if(pipe_check(args))
-    {
-        pipe_execution(shell->cmds, shell);
-        return ;
-    }
+    // int i;
+    char *pat;
+
+    // i = 0;
     pid = fork();
     if (pid < 0)
     {
@@ -83,7 +102,12 @@ void execute_command(char *command, char **args, t_mini *shell)
         return ;
     }
     if (pid == 0)
-        execve(command, args, shell->envp);
+    {
+        pat = join_path(path[3], args[0]);
+        // printf("%s",pat);
+        execve(pat, args, shell->envp); 
+        exit(1);
+    }
     else
         waitpid(pid, &status, 0);
 }
@@ -121,7 +145,7 @@ void execute(t_parser *parser, t_mini *shell, t_env **env)
         if (tmp->builtin)
             execute_builtin(tmp, env, shell);
         else
-            execute_command(tmp->str[0], tmp->str, shell);
+            execute_command(shell->path, tmp->str, shell);
         tmp = tmp->next;
     }
 }

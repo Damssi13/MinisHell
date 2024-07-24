@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:09:51 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/21 15:31:55 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/24 13:12:44 by rachid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,15 +40,15 @@ int main(int ac, char **av, char **envm)
 	(void)ac;
 	(void)av;
 	t_mini	shell;
-	
-	init_mini(&shell,envm);
+		
+	init_mini(&shell, envm);
 	while (1)
 	{
 		shell.rl = readline("minishell> ");
 		if (!shell.rl)
 			break;
 		first_parse(shell.rl, &shell.head);
-		parsing(&shell.head, &shell.cmds);
+		parsing(&shell);
 		execute(shell.cmds, &shell, &shell.env);
 		free_tokens(shell.head);
 		free_parser(shell.cmds);
