@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 09:40:39 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/23 19:17:33 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/24 09:53:44 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ void echo_builtin(char **args)
     while (args[i])
     {
         remove_quotes(args[i]);
-	    // rm_quote(args[i]);
         write(1, args[i], ft_strlen(args[i]));
         if (args[i++ + 1])
             write(1, " ", 1);
@@ -68,8 +67,8 @@ t_env *ft_new_env(const char *key, const char *value)
     if (!new_node)
         return NULL;
 
-    new_node->key = strdup(key);
-    new_node->value = strdup(value);
+    new_node->key = ft_strdup(key);
+    new_node->value = ft_strdup(value);
     new_node->next = NULL;
 
     return new_node;
@@ -80,10 +79,10 @@ void update_env(t_env **env, const char *key, const char *value)
     t_env *temp = *env;
     while (temp)
     {
-        if (strcmp(temp->key, key) == 0)
+        if (ft_strncmp(temp->key, key, ft_strlen(key)) == 0)
         {
             free(temp->value);
-            temp->value = strdup(value);
+            temp->value = ft_strdup(value);
             return;
         }
         temp = temp->next;
@@ -190,13 +189,11 @@ void export_builtin(char **args, t_env **env)
         }
         return;
     }
-
     i = 1;
     while (args[i])
     {
         char *arg = args[i];
         key = ft_strnlen(arg, '=');
-
         if (!is_valid_identifier(key))
         {
             ft_putendl_fd("minishell: export: not a valid identifier", 2);
@@ -204,13 +201,11 @@ void export_builtin(char **args, t_env **env)
             i++;
             continue;
         }
-
-        if (strchr(arg, '='))
-            value = strdup(strchr(arg, '=') + 1);
+        if (ft_strchr(arg, '='))
+            value = ft_strdup(ft_strchr(arg, '=') + 1);
         else
-            value = strdup("");
-
-        if (value && strchr(arg, '=') == arg) // Check for cases like "export =value"
+            value = ft_strdup("");
+        if (value && ft_strchr(arg, '=') == arg)
         {
             ft_putendl_fd("minishell: export: not a valid identifier", 2);
             free(key);
@@ -218,7 +213,6 @@ void export_builtin(char **args, t_env **env)
             i++;
             continue;
         }
-
         update_env(env, key, value);
         free(key);
         free(value);
