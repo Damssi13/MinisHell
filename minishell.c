@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:09:51 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/24 15:10:13 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/25 11:50:17 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,6 @@ void handle_sigint(int sig)
     write(STDOUT_FILENO, "\nMiniShell>", 12);
 }
 
-void handle_sigquit(int sig)
-{
-    (void)sig;
-}
 
 int main(int ac, char **av, char **envm)
 {
@@ -53,7 +49,8 @@ int main(int ac, char **av, char **envm)
 	
 	init_mini(&shell,envm);
 	signal(SIGINT, handle_sigint);
-    signal(SIGQUIT, handle_sigquit);
+    signal(SIGQUIT, SIG_IGN);
+	
 	while (1)
 	{
 		shell.rl = readline("MiniShell> ");
