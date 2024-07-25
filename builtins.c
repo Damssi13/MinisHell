@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 09:40:39 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/25 13:25:05 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/25 14:51:01 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,6 +204,7 @@ void export_builtin(char **args, t_env **env)
     i = 1;
     while (args[i])
     {
+        remove_quotes(args[i]);
         char *arg = args[i];
         equal_sign_pos = ft_strchr(arg, '=');
 
