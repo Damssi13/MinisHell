@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:10:03 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/25 15:50:27 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/26 15:38:07 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,8 +112,10 @@ t_env 				*ft_new_env(const char *key, const char *value);
 void				ft_lstadd(t_env **lst, t_env *new);
 t_env 				*create_env(char **env);
 char 				*ft_strnlen(const char *str, char delimiter);
-
-
+void 				print_sorted_env(t_env **env);
+void 				sort_env(t_env **env_array, int count);
+void 				swap_env(t_env **a, t_env **b);
+int 				count_env(t_env *env);
 
 /**************             DAMSSI             *************/
 

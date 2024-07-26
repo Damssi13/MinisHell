@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 09:40:39 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/25 15:39:37 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/26 19:03:52 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ char *getenv_value(t_env *env, const char *key)
 {
     while (env)
     {
-        if (ft_strncmp(env->key, key, ft_strlen(key)) == 0)
+        if (ft_strcmp(env->key, key) == 0)
             return env->value;
         env = env->next;
     }
@@ -187,18 +187,11 @@ void export_builtin(char **args, t_env **env)
     char *key;
     char *value;
     char *equal_sign_pos;
+    char *plus_sign_pos;
 
     if (!args[1])
     {
-        t_env *current = *env;
-        while (current)
-        {
-            if (current->value)
-                printf("declare -x %s=\"%s\"\n", current->key, current->value);
-            else
-                printf("declare -x %s\n", current->key);
-            current = current->next;
-        }
+        print_sorted_env(env);
         return;
     }
     i = 1;
@@ -207,11 +200,20 @@ void export_builtin(char **args, t_env **env)
         remove_quotes(args[i]);
         char *arg = args[i];
         equal_sign_pos = ft_strchr(arg, '=');
+        plus_sign_pos = ft_strchr(arg, '+');
 
-        if (equal_sign_pos)
+        if (equal_sign_pos || plus_sign_pos)
         {
-            key = ft_substr(arg, 0, equal_sign_pos - arg);
-            value = ft_strdup(equal_sign_pos + 1);
+            if (plus_sign_pos)
+            {
+                key = ft_substr(arg, 0, plus_sign_pos - arg);
+                value = ft_strjoin(getenv_value(*env, value), plus_sign_pos + 1);
+            }
+            else
+            {
+                key = ft_substr(arg, 0, equal_sign_pos - arg);
+                value = ft_strdup(equal_sign_pos + 1);
+            }
         }
         else
         {
