@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 09:40:39 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/26 19:03:52 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/27 11:02:37 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,26 +63,29 @@ char *getenv_value(t_env *env, const char *key)
 
 t_env *ft_new_env(const char *key, const char *value)
 {
-    t_env *new_node = malloc(sizeof(t_env));
+    t_env *new_node;
+    
+    new_node = malloc(sizeof(t_env));
     if (!new_node)
         return NULL;
-
     new_node->key = ft_strdup(key);
     if(value)
         new_node->value = ft_strdup(value);
     else
         new_node->value = NULL;
     new_node->next = NULL;
-
     return new_node;
 }
 
 void update_env(t_env **env, const char *key, const char *value)
 {
-    t_env *temp = *env;
+    t_env *temp;
+    t_env *new_node;
+    
+    temp = *env;
     while (temp)
     {
-        if (ft_strncmp(temp->key, key, ft_strlen(key)) == 0)
+        if (!(ft_strcmp(temp->key, key)))
         {
             if (temp->value)
                 free(temp->value);
@@ -94,7 +97,7 @@ void update_env(t_env **env, const char *key, const char *value)
         }
         temp = temp->next;
     }
-    t_env *new_node = ft_new_env(key, value);
+    new_node = ft_new_env(key, value);
     ft_lstadd(env, new_node);
 }
 
@@ -135,18 +138,19 @@ void exit_builtin(char **args)
 
 void unsetenv_custom(t_env **env, const char *key)
 {
-    t_env *temp = *env;
-    t_env *prev = NULL;
+    t_env *temp; 
+    t_env *prev; 
 
+    temp = *env;
+    prev= NULL;
     while (temp)
     {
-        if (ft_strncmp(temp->key, key, ft_strlen(key)) == 0)
+        if (!(ft_strcmp(temp->key, key)))
         {
             if (prev)
                 prev->next = temp->next;
             else
                 *env = temp->next;
-            
             free(temp->key);
             free(temp->value);
             free(temp);
@@ -170,7 +174,7 @@ void unset_builtin(char **args, t_env **env)
 
 int is_valid_identifier(const char *str)
 {
-    if (!str || !ft_isalpha(*str))
+    if (!str || (!ft_isalpha(*str) && *str != '_'))
         return 0;
     while (*str)
     {
@@ -187,7 +191,7 @@ void export_builtin(char **args, t_env **env)
     char *key;
     char *value;
     char *equal_sign_pos;
-    char *plus_sign_pos;
+    char *plus_equal_sign_pos;
 
     if (!args[1])
     {
@@ -200,14 +204,19 @@ void export_builtin(char **args, t_env **env)
         remove_quotes(args[i]);
         char *arg = args[i];
         equal_sign_pos = ft_strchr(arg, '=');
-        plus_sign_pos = ft_strchr(arg, '+');
+        plus_equal_sign_pos = strstr(arg, "+=");
 
-        if (equal_sign_pos || plus_sign_pos)
+        if (equal_sign_pos || plus_equal_sign_pos)
         {
-            if (plus_sign_pos)
+            if (plus_equal_sign_pos)
             {
-                key = ft_substr(arg, 0, plus_sign_pos - arg);
-                value = ft_strjoin(getenv_value(*env, value), plus_sign_pos + 1);
+                key = ft_substr(arg, 0, plus_equal_sign_pos - arg);
+                char *existing_value = getenv_value(*env, key);
+                char *new_value_part = ft_strdup(plus_equal_sign_pos + 2);
+                if (existing_value)
+                    value = ft_strjoin(existing_value, new_value_part);
+                else
+                    value = ft_strdup(new_value_part);
             }
             else
             {

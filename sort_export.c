@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 12:21:42 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/26 15:36:34 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/27 10:28:51 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ void print_sorted_env(t_env **env)
         perror("malloc");
         exit(EXIT_FAILURE);
     }
-    // Populate the array with environment variables
     t_env *current = *env;
     int i = 0;
     while (current)
@@ -75,9 +74,7 @@ void print_sorted_env(t_env **env)
         current = current->next;
         i++;
     }
-    // Sort the array
     sort_env(env_array, count);
-    // Print the sorted environment variables
     i = 0;
     while (i < count)
     {
