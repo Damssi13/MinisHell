@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:09:51 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/27 10:05:54 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/27 16:50:20 by rachid           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,11 @@ void	init_mini(t_mini *shell, char **envm)
 		i++;
 	}
 	shell->envp = arr_dup(envm);
+	shell->env = create_env(envm);
 	shell->cmds = NULL;
 	shell->head = NULL;
 	shell->rl = NULL;	
 	shell->pipes = 0;
-	shell->env = create_env(envm);
 }
 
 void handle_sigint(int sig)
@@ -52,11 +52,11 @@ void ft_start(t_mini shell)
 {	
 	while(1)
 	{
-		shell.rl = readline("MiniShell> ");
+		shell.rl = readline("MiniShell$ ");
 		if (!shell.rl)
 			break;
 		first_parse(shell.rl, &shell.head);
-		parsing(&shell.head, &shell.cmds);
+		parsing(&shell);
 		execute(shell.cmds, &shell, &shell.env);
 		free_tokens(shell.head);
 		free_parser(shell.cmds);
