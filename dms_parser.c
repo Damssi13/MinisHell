@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dms_parser.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rachid <rachid@student.42.fr>              +#+  +:+       +#+        */
+/*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 16:56:16 by rachid            #+#    #+#             */
-/*   Updated: 2024/07/20 09:12:06 by rachid           ###   ########.fr       */
+/*   Updated: 2024/07/27 10:06:48 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void ft_error(char *message)
 	ft_putstr_fd(message, 2);
 	// you free all the node
 }
+
 int     redir_kind(t_lexer *lst)
 {
     t_lexer *curr;
@@ -58,6 +59,7 @@ int     redir_kind(t_lexer *lst)
     }
     return i;       
 }
+
 e_tokens    red_join(e_tokens r1, e_tokens r2)
 {
     if(r1 == RED_IN && r2 == RED_IN)
@@ -66,6 +68,7 @@ e_tokens    red_join(e_tokens r1, e_tokens r2)
         return APP_OUT;
     return APP_OUT; //did it because control reaches end of non void 
 }
+
 t_lexer     *new_lex(int r_num, e_tokens redirection, char *file)
 {
     t_lexer *new_lex;
@@ -82,6 +85,7 @@ t_lexer     *new_lex(int r_num, e_tokens redirection, char *file)
         new_lex->token = red_join(redirection, redirection);
     return new_lex;
 }
+
 void    lex_addback(t_lexer **redirections, t_lexer *new_lex)
 {
     t_lexer *tmp;
@@ -147,6 +151,7 @@ void rm_redirection(t_lexer **head, t_parser **cmd)
 	}
 	return;
 }
+
 int count_args(t_lexer **lst)
 {
 	int i;
@@ -162,6 +167,7 @@ int count_args(t_lexer **lst)
 	}
 	return i;
 }
+
 void rm_node(t_lexer **lst)
 {
 	t_lexer *tmp;
@@ -205,7 +211,7 @@ void 	argscpy(t_lexer **head, int args, char **cmd)
 }
 
 
-int find_builtin(char *first_word) /**** it checks if the first string in the array matches the command ****/
+int find_builtin(char *first_word)
 {
 	int i;
 	char *builtin_array[7][2] = {
@@ -235,6 +241,7 @@ t_parser *new_cmd(char **cmd)
 	new = malloc(sizeof(t_parser));
 	if (!new)
 		ft_error("malloc failed to allocate");
+	remove_quotes(cmd[0]);
 	new->str = cmd;
 	new->builtin = find_builtin(cmd[0]);
 	new->next = NULL;

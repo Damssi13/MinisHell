@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:09:51 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/21 15:31:55 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/27 10:05:54 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,19 +32,27 @@ void	init_mini(t_mini *shell, char **envm)
 	shell->rl = NULL;	
 	shell->pipes = 0;
 	shell->env = create_env(envm);
-	shell->export = arr_dup(shell->envp);
 }
 
-int main(int ac, char **av, char **envm)
+void handle_sigint(int sig)
 {
-	(void)ac;
-	(void)av;
-	t_mini	shell;
-	
-	init_mini(&shell,envm);
-	while (1)
+    (void)sig;
+    write(STDOUT_FILENO, "\nMiniShell>", 12);
+}
+
+void ft_remove_quotes(t_parser *parse)
+{
+	t_parser *tmp;
+
+	tmp = parse;
+	remove_quotes(tmp->str[0]);
+}
+
+void ft_start(t_mini shell)
+{	
+	while(1)
 	{
-		shell.rl = readline("minishell> ");
+		shell.rl = readline("MiniShell> ");
 		if (!shell.rl)
 			break;
 		first_parse(shell.rl, &shell.head);
@@ -55,6 +63,18 @@ int main(int ac, char **av, char **envm)
 		shell.head = NULL;
 		shell.cmds = NULL;
 	}
+}
+
+int main(int ac, char **av, char **envm)
+{
+	(void)ac;
+	(void)av;
+	t_mini	shell;
+	
+	init_mini(&shell,envm);
+	signal(SIGINT, handle_sigint);
+    signal(SIGQUIT, SIG_IGN);
+	ft_start(shell);
 	free(shell.rl);
 	return (0);
 }

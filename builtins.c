@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 09:40:39 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/21 15:30:28 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/27 11:02:37 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,41 +54,53 @@ char *getenv_value(t_env *env, const char *key)
 {
     while (env)
     {
-        if (ft_strncmp(env->key, key, ft_strlen(key)) == 0)
+        if (ft_strcmp(env->key, key) == 0)
             return env->value;
         env = env->next;
     }
     return NULL;
 }
 
-void setenv_value(t_env **env, const char *key, const char *value)
+t_env *ft_new_env(const char *key, const char *value)
 {
-    t_env *temp = *env;
+    t_env *new_node;
+    
+    new_node = malloc(sizeof(t_env));
+    if (!new_node)
+        return NULL;
+    new_node->key = ft_strdup(key);
+    if(value)
+        new_node->value = ft_strdup(value);
+    else
+        new_node->value = NULL;
+    new_node->next = NULL;
+    return new_node;
+}
+
+void update_env(t_env **env, const char *key, const char *value)
+{
+    t_env *temp;
+    t_env *new_node;
+    
+    temp = *env;
     while (temp)
     {
-        if (ft_strncmp(temp->key, key, ft_strlen(key)) == 0)
+        if (!(ft_strcmp(temp->key, key)))
         {
-            free(temp->value);
-            temp->value = ft_strdup(value);
+            if (temp->value)
+                free(temp->value);
+            if (value)
+                temp->value = ft_strdup(value);
+            else
+                temp->value = NULL;
             return;
         }
         temp = temp->next;
     }
-
-    t_env *new_node = malloc(sizeof(t_env));
-    new_node->key = ft_strdup(key);
-    new_node->value = ft_strdup(value);
-    new_node->next = *env;
-    *env = new_node;
+    new_node = ft_new_env(key, value);
+    ft_lstadd(env, new_node);
 }
 
-void update_env(t_env **env, const char *oldpwd, const char *newpwd)
-{
-    if (oldpwd)
-        setenv_value(env, "OLDPWD", oldpwd);
-    if (newpwd)
-        setenv_value(env, "PWD", newpwd);
-}
 
 void cd_builtin(char **args, t_env **env)
 {
@@ -124,40 +136,112 @@ void exit_builtin(char **args)
         exit(0);
 }
 
-void unset_builtin(char **args)
+void unsetenv_custom(t_env **env, const char *key)
 {
-    int i;
+    t_env *temp; 
+    t_env *prev; 
 
-    i = 1;
+    temp = *env;
+    prev= NULL;
+    while (temp)
+    {
+        if (!(ft_strcmp(temp->key, key)))
+        {
+            if (prev)
+                prev->next = temp->next;
+            else
+                *env = temp->next;
+            free(temp->key);
+            free(temp->value);
+            free(temp);
+            return;
+        }
+        prev = temp;
+        temp = temp->next;
+    }
+}
+
+void unset_builtin(char **args, t_env **env)
+{
+    int i = 1;
+
     while (args[i])
     {
-        unsetenv(args[i]);
+        unsetenv_custom(env, args[i]);
         i++;
     }
 }
 
-void export_builtin(char **args, t_mini *shell)
+int is_valid_identifier(const char *str)
+{
+    if (!str || (!ft_isalpha(*str) && *str != '_'))
+        return 0;
+    while (*str)
+    {
+        if (!ft_isalnum(*str) && *str != '_')
+            return 0;
+        str++;
+    }
+    return 1;
+}
+
+void export_builtin(char **args, t_env **env)
 {
     int i;
     char *key;
     char *value;
-    int j;
+    char *equal_sign_pos;
+    char *plus_equal_sign_pos;
 
-    j = 0;
-    if(!args[1])
+    if (!args[1])
     {
-        while(shell->export[j])
-            ft_putendl_fd(shell->export[j++], 1);
+        print_sorted_env(env);
+        return;
     }
     i = 1;
     while (args[i])
     {
-        key = ft_strtok(args[i], "=");
-        value = ft_strtok(NULL, "=");
-        if (value)
-            setenv(key, value, 1);
+        remove_quotes(args[i]);
+        char *arg = args[i];
+        equal_sign_pos = ft_strchr(arg, '=');
+        plus_equal_sign_pos = strstr(arg, "+=");
+
+        if (equal_sign_pos || plus_equal_sign_pos)
+        {
+            if (plus_equal_sign_pos)
+            {
+                key = ft_substr(arg, 0, plus_equal_sign_pos - arg);
+                char *existing_value = getenv_value(*env, key);
+                char *new_value_part = ft_strdup(plus_equal_sign_pos + 2);
+                if (existing_value)
+                    value = ft_strjoin(existing_value, new_value_part);
+                else
+                    value = ft_strdup(new_value_part);
+            }
+            else
+            {
+                key = ft_substr(arg, 0, equal_sign_pos - arg);
+                value = ft_strdup(equal_sign_pos + 1);
+            }
+        }
         else
-            setenv(key, "", 1);
+        {
+            key = ft_strdup(arg);
+            value = NULL;
+        }
+        if (!is_valid_identifier(key))
+        {
+            ft_putendl_fd("minishell: export: not a valid identifier", 2);
+            free(key);
+            if (value)
+                free(value);
+            i++;
+            continue;
+        }
+        update_env(env, key, value);
+        free(key);
+        if (value)
+            free(value);
         i++;
     }
 }
@@ -165,6 +249,14 @@ void export_builtin(char **args, t_mini *shell)
 
 void env_builtin(t_env **env)
 {
-    print_env(env);
+    t_env *tmp;
+
+	tmp = *env;
+	while (tmp)
+	{
+        if(tmp->value)
+		    printf("%s=%s\n", tmp->key, tmp->value);
+		tmp = tmp->next;
+	}
 }
 
