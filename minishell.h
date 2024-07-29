@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:10:03 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/29 12:31:23 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/29 12:44:55 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,10 @@
 typedef struct s_global
 {
 	int		exit_status;
-	char *key;
-    char *value;
-    char *equal_sign_pos;
-    char *plus_equal_sign_pos;
+	char 	*key;
+    char 	*value;
+    char 	*equal_sign_pos;
+    char 	*plus_equal_sign_pos;
 	int		end;
 	char	quote;
 }				t_global;
@@ -100,24 +100,37 @@ typedef struct s_mini
 /***************************** JANDRI **********************************/
 t_lexer				*ft_new_token(char *content);
 void				ft_lstadd_back(t_lexer **lst, t_lexer *new);
-int					type(char *p);
-void				make_words(char *p, int start, int end, t_lexer **head);
-void				split_args(char *p, int start, int inside, t_lexer **head);
-void				free_tokens(t_lexer *head);
-void				clear_screen(void);
-void				first_parse(char *rl, t_lexer **head);
-int					parse_quote(char *rl);
 char				*ft_strtrim(char const *s1, char const *set);
-int					check_next(char *first, char next);
 int 				is_whitespace(char c);
 char 				*ft_strtok(char *str, const char *delim);
-void 				execute(t_parser *parser, t_mini *shell, t_env **env);
 void				free_parser(t_parser *head);
 void 				remove_quotes(char *str);
 int 				is_n_flag(char *arg);
 char 				*rm_quote(char *str);
 void				ft_lstadd(t_env **lst, t_env *new);
 char 				*ft_strnlen(const char *str, char delimiter);
+
+/***************************** execution **********************************/
+void				pipe_execution(t_parser *cmds, t_mini *shell);
+int					pipe_check(char **args);
+void				execute_command(char *command, char **args, t_mini *shell);
+void				redirection_execution(t_parser *cmds, t_mini *shell);
+void				execute_builtin(t_parser *args, t_env **env);
+void 				execute(t_parser *parser, t_mini *shell, t_env **env);
+
+/***************************** Lexer *************************************/
+void				make_words(char *p, int start, int end, t_lexer **head);
+void				step_one(char *p, int *inside, char *quote, int i);
+void				split_args(char *p, int start, int inside, t_lexer **head);
+void				free_tokens(t_lexer *head);
+
+/***************************** Parser **********************************/
+int					type(char *p);
+int					check_next(char *first, char next);
+int					parse_quote(char *rl);
+void				clear_screen(void);
+void				first_parse(char *rl, t_lexer **head);
+
 
 /***************************** builtins **********************************/
 void 				cd_builtin(char **args, t_env **env);
