@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 13:19:48 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/29 16:19:19 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/29 16:56:45 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,6 +167,7 @@ void execute(t_parser *parser, t_mini *shell, t_env **env)
 {
     t_parser *tmp;
 
+    (void)shell;
     tmp = parser;
     while (tmp)
     {
@@ -174,8 +175,8 @@ void execute(t_parser *parser, t_mini *shell, t_env **env)
             ft_heredoc(tmp);
         else if(tmp->builtin)
             execute_builtin(tmp, env);
-        else
-            execute_command(tmp->str[0], tmp->str, shell);
+        // else
+        //     execute_command(tmp->str[0], tmp->str, shell);
         tmp = tmp->next;
     }
 }
