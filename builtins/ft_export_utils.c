@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sort_export.c                                      :+:      :+:    :+:   */
+/*   ft_export_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/26 12:21:42 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/27 12:37:11 by bjandri          ###   ########.fr       */
+/*   Created: 2024/07/28 11:10:54 by bjandri           #+#    #+#             */
+/*   Updated: 2024/07/29 12:30:29 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 int count_env(t_env *env)
 {
@@ -56,25 +56,10 @@ void sort_env(t_env **env_array, int count)
     }
 }
 
-void print_sorted_env(t_env **env)
+void    print_sorted(t_env **env_array, int count)
 {
-    int count = count_env(*env);
-    t_env **env_array = malloc(count * sizeof(t_env *));
+    int i;
     
-    if (!env_array)
-    {
-        perror("malloc");
-        exit(EXIT_FAILURE);
-    }
-    t_env *current = *env;
-    int i = 0;
-    while (current)
-    {
-        env_array[i] = current;
-        current = current->next;
-        i++;
-    }
-    sort_env(env_array, count);
     i = 0;
     while (i < count)
     {
@@ -84,5 +69,31 @@ void print_sorted_env(t_env **env)
             printf("declare -x %s\n", env_array[i]->key);
         i++;
     }
+}
+
+void sorted_env(t_env **env)
+{
+    int count;
+    t_env **env_array;
+    t_env *current;
+    int i;
+    
+    count = count_env(*env);
+    env_array = malloc(count * sizeof(t_env *));
+    if (!env_array)
+    {
+        perror("malloc failed");
+        exit(EXIT_FAILURE);
+    }
+    current = *env;
+    i = 0;
+    while (current)
+    {
+        env_array[i] = current;
+        current = current->next;
+        i++;
+    }
+    sort_env(env_array, count);
+    print_sorted(env_array, count);
     free(env_array);
 }

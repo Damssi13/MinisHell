@@ -6,12 +6,11 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 13:19:48 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/25 15:52:22 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/29 12:14:38 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
 
 void pipe_execution(t_parser *parser, t_mini *shell)
 {
