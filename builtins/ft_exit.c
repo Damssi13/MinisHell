@@ -6,39 +6,37 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 10:52:01 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/29 11:57:11 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/30 10:15:24 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-t_global global;
-
-void exit_builtin(char **args)
+void	exit_builtin(char **args)
 {
-    int i;
+	int	i;
 
-    i = 1;
-    if (args[i])
-    {
-        if (args[i + 1])
-        {
-            ft_putstr_fd("exit\nminishell: exit: too many arguments\n", 2);
-            global.exit_status = 1; 
-            return ;
-        }
-        if (!ft_isdigit(args[i][0]))
-        {
-            ft_putstr_fd("minishell: exit:  numeric argument required\n", 2);
-            global.exit_status = 255; 
-            return ;
-        }
-        ft_putstr_fd("exit\n", 2);
-        exit(ft_atoi(args[i]));
-    }
-    else
-    {
-        ft_putstr_fd("exit\n", 2);
-        exit(0);
-    }
+	i = 1;
+	if (args[i])
+	{
+		if (args[i + 1])
+		{
+			ft_putstr_fd("exit\nminishell: exit: too many arguments\n", 2);
+			g_global.exit_status = 1;
+			return ;
+		}
+		if (!ft_isdigit(args[i][0]))
+		{
+			ft_putstr_fd("minishell: exit:  numeric argument required\n", 2);
+			g_global.exit_status = 255;
+			return ;
+		}
+		ft_putstr_fd("exit\n", 2);
+		exit(ft_atoi(args[i]));
+	}
+	else
+	{
+		ft_putstr_fd("exit\n", 2);
+		exit(0);
+	}
 }
