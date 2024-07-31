@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/10 16:56:16 by rachid            #+#    #+#             */
-/*   Updated: 2024/07/27 13:13:24 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/31 08:20:47 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,9 @@ int	redirection_check(t_lexer *tmp)
 			return (0);
 		curr = curr->next;
 	}
-	return (0);
+	if(!curr)
+		return 1;
+	return 0;
 }
 
 void	ft_error(char *message)
@@ -47,17 +49,17 @@ int	redir_kind(t_lexer *lst)
 	t_lexer	*curr;
 	int		i;
 
-	i = 0;
-	curr = lst;
-	while (lst)
-	{
-		if (curr->token >= 2 && curr->token <= 5)
-			i++;
-		if (!(curr->token >= 2 && curr->token <= 5))
-			return (i);
-		curr = curr->next;
-	}
-	return (i);
+    i = 0;
+    curr = lst;    
+    while(curr)
+    {
+        if(curr->token >= 2 && curr->token <= 5)
+            i++;
+        if(!(curr->token >= 2 && curr->token <= 5))
+            return i;
+        curr = curr->next;
+    }
+    return i;       
 }
 
 e_tokens	red_join(e_tokens r1, e_tokens r2)
@@ -106,49 +108,50 @@ void	lex_addback(t_lexer **redirections, t_lexer *new_lex)
 	new_lex->index = i++;
 }
 
-void	add_redirection(t_lexer *lst, t_parser **cmd)
+void add_redirection(t_lexer *lst, t_redirections *redirex)
 {
-	int		redirection_type;
-	t_lexer	*node;
-
-	/*every redirection is in a node so i should check whether it is multiple or solo*/
-	node = NULL;
-	redirection_type = redir_kind(lst);
-	if (redirection_type == 1)
-		node = new_lex(1, lst->token, ft_strdup(lst->next->word));
-	else if (redirection_type == 2)
+    /*every redirection is in a node so i should check whether it is multiple or solo*/
+	int redirection_type;
+    t_lexer *node = NULL;
+    
+    redirection_type = redir_kind(lst);
+    if(redirection_type == 1)
+   		node = new_lex(1, lst->token ,ft_strdup(lst->next->word));
+    else if(redirection_type == 2)
 	{
-		node = new_lex(2, lst->token, ft_strdup(lst->next->next->word));
-	}
-	lex_addback(&(*cmd)->redirections, node);
-	rm_node(&lst); /// now this is the probelem
-	if (redirection_type == 2)
-	{
-		rm_node(&lst->next);
-		rm_node(&lst->next->next);
-	}
-	else
-		rm_node(&lst->next);
+        node = new_lex(2, lst->token, ft_strdup(lst->next->next->word));
+    }
+	lex_addback(&redirex->redirects, node); /// the case where there is no cmd node allocated fails
+    rm_node(&lst);/// now this is the probelem
+    if(redirection_type == 2)
+    {
+        rm_node(&lst->next);
+        rm_node(&lst->next->next);
+    }
+    else
+        rm_node(&lst->next);
 }
 
-void	rm_redirection(t_lexer **head, t_parser **cmd)
+int rm_redirection(t_lexer *lexer, t_redirections *redirex)
 {
 	t_lexer	*tmp;
 
-	(void)cmd;
-	tmp = *head;
+	tmp = lexer;
 	while (tmp)
 	{
 		if (tmp->token == PIPE)
-			return ;
+			return 1;
 		if (tmp->token >= 2 && tmp->token <= 5)
 			if (redirection_check(tmp))
-				ft_error("syntax error near unexpected token");
+			{
+				ft_error("syntax error near unexpected token 'newline'\n");
+				return (-1);
+			}
 		if (tmp->token >= 2 && tmp->token <= 5)
-			add_redirection(tmp, cmd);
+			add_redirection(tmp, redirex);
 		tmp = tmp->next;
 	}
-	return ;
+	return 1;
 }
 
 int	count_args(t_lexer **lst)
@@ -172,18 +175,19 @@ void	rm_node(t_lexer **lst)
 	t_lexer	*tmp2;
 
 	tmp = *lst;
-	if (tmp->prev)
-	{
-		tmp2 = tmp->prev;
-		tmp2->next = tmp->next;
-		tmp->next->prev = tmp2;
-		free(tmp);
-		return ;
-	}
-	if (tmp->next)
-	{
-		tmp->next->prev = NULL;
-	}
+    if(tmp->prev)
+    {
+        tmp2 = tmp->prev;
+        tmp2->next = tmp->next;
+		if(tmp->next)
+        	tmp->next->prev = tmp2;
+        free(tmp);
+        return ;
+    }
+    if(tmp->next)
+    {
+        tmp->next->prev = NULL;
+    }
 	*lst = tmp->next;
 	free(tmp);
 }
@@ -225,7 +229,7 @@ int	find_builtin(char *first_word)
 	return (0);
 }
 
-t_parser	*new_cmd(char **cmd)
+t_parser *new_cmd(char **cmd, t_redirections *redirex)
 {
 	t_parser	*new;
 
@@ -235,6 +239,8 @@ t_parser	*new_cmd(char **cmd)
 	remove_quotes(cmd[0]);
 	new->str = cmd;
 	new->builtin = find_builtin(cmd[0]);
+	new->redirections = redirex->redirects;
+	new->n_redirections = redirex->n_redirects;
 	new->next = NULL;
 	return (new);
 }
@@ -255,25 +261,40 @@ void	cmd_addback(t_parser **command, t_parser *new_cmd)
 	new_cmd->prev = curr;
 }
 
-void	parsing(t_lexer **head, t_parser **commands)
+void	init_redirex(t_redirections *redirex, t_mini *shell)
 {
-	int		args;
-	char	**cmd;
+	redirex->lexer = shell->head;
+	redirex->redirects = NULL;
+	redirex->n_redirects = 0;
+}
 
+void parsing(t_mini *shell)
+{
+	t_redirections redirex;
+	
+	int args;
+	char **cmd;
 	// t_lexer *tmp;
-	while ((*head))
-	{
-		if ((*head)->token == PIPE) // if it encounters a pipe
-			rm_node(head);
-		rm_redirection(head, commands);
-		args = count_args(head);
-		cmd = malloc(sizeof(char *) * (args + 1));
-		if (!cmd)
-			ft_error("malloc failed to allocate");
-		cmd[args] = NULL;
-		argscpy(head, args, cmd);
-		cmd_addback(commands, new_cmd(cmd));
-	}
+
+    while((shell->head))
+    {   
+	    if((shell->head)->token == PIPE)
+		{
+			rm_node(&shell->head);
+		}
+		init_redirex(&redirex, shell);
+	    if(rm_redirection(shell->head, &redirex) == -1)
+			return ;
+	    args = count_args(&shell->head);
+
+	    cmd = malloc(sizeof(char *) * (args + 1));
+	    if (!cmd)
+	    	ft_error("malloc failed to allocate");
+        cmd[args] = NULL;
+	    argscpy(&shell->head, args, cmd);
+    
+	    cmd_addback(&shell->cmds, new_cmd(cmd, &redirex));
+    }	
 }
 
 char	**arr_dup(char **envm)

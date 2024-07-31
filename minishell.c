@@ -6,7 +6,7 @@
 /*   By: bjandri <bjandri@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/19 15:09:51 by bjandri           #+#    #+#             */
-/*   Updated: 2024/07/30 10:14:21 by bjandri          ###   ########.fr       */
+/*   Updated: 2024/07/31 08:24:04 by bjandri          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,11 @@ void	init_mini(t_mini *shell, char **envm)
 		i++;
 	}
 	shell->envp = arr_dup(envm);
+	shell->env = create_env(envm);
 	shell->cmds = NULL;
 	shell->head = NULL;
 	shell->rl = NULL;
 	shell->pipes = 0;
-	shell->env = create_env(envm);
 }
 
 void	handle_sigint(int sig)
@@ -54,7 +54,7 @@ void	ft_start(t_mini shell)
 {
 	while (1)
 	{
-		shell.rl = readline("MiniShell> ");
+		shell.rl = readline("MiniShell$ ");
 		if (!shell.rl)
 			break ;
 		add_history(shell.rl);
